@@ -1,3 +1,4 @@
+import { LeadCaptureForm } from "@/components/results/lead-capture-form";
 type AuditItem = {
   tool: string;
   currentSpend: number;
@@ -61,6 +62,19 @@ export function ResultsView({ result, publicMode = false }: Props) {
               </div>
             </div>
           </div>
+<section className="rounded-3xl border border-white/10 bg-white/5 p-8">
+  <h2 className="text-2xl font-semibold">Get this report by email</h2>
+  <p className="mt-3 max-w-2xl text-zinc-300">
+    Save your audit and receive a confirmation email. For high-savings cases, Credex may follow up with optimization options.
+  </p>
+
+  <div className="mt-6">
+    <LeadCaptureForm
+      totalMonthlySavings={result.totalMonthlySavings}
+      totalAnnualSavings={result.totalAnnualSavings}
+    />
+  </div>
+</section>
 
           <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
             <p className="text-sm uppercase tracking-[0.2em] text-zinc-400">
