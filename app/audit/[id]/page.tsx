@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { supabaseAdmin } from "@/lib/supabase";
+import { getSupabaseAdmin } from "@/lib/supabase";
 import { ResultsView } from "@/components/results/results-view";
 
 type Props = {
@@ -8,6 +8,8 @@ type Props = {
 };
 
 async function getAudit(id: string) {
+  const supabaseAdmin = getSupabaseAdmin();
+
   const { data, error } = await supabaseAdmin
     .from("audits")
     .select("*")
@@ -26,22 +28,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: "Audit not found" };
   }
 
-  const monthly = Number(audit.total_monthly_savings || 0).toFixed(0);
-  const annual = Number(audit.total_annual_savings || 0).toFixed(0);
-
   return {
-    title: `AI Spend Audit: Save $${monthly}/mo`,
-    description: `Per-tool recommendations with estimated annual savings of $${annual}.`,
-    openGraph: {
-      title: `AI Spend Audit: Save $${monthly}/mo`,
-      description: `Per-tool recommendations with estimated annual savings of $${annual}.`,
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `AI Spend Audit: Save $${monthly}/mo`,
-      description: `Per-tool recommendations with estimated annual savings of $${annual}.`,
-    },
+    title: `AI Spend Audit: Save $${Number(audit.total_monthly_savings || 0).toFixed(0)}/mo`,
   };
 }
 
@@ -51,7 +39,5 @@ export default async function PublicAuditPage({ params }: Props) {
 
   if (!audit) notFound();
 
-  const result = audit.result_json;
-
-  return <ResultsView result={result} publicMode />;
+  return <ResultsView result={audit.result_json} publicMode />;
 }
