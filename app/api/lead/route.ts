@@ -1,34 +1,16 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase";
+import { getSupabaseAdmin } from "@/lib/supabase";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-
-    const {
-      email,
-      companyName,
-      role,
-      teamSize,
-      auditId,
-      totalMonthlySavings,
-      totalAnnualSavings,
-      website,
-    } = body;
+    const { email, companyName, role, teamSize, auditId, totalMonthlySavings, totalAnnualSavings, website } = body;
 
     if (website) {
-      return NextResponse.json(
-        { ok: false, message: "Spam detected." },
-        { status: 400 }
-      );
+      return NextResponse.json({ ok: false, message: "Spam detected." }, { status: 400 });
     }
 
-    if (!email) {
-      return NextResponse.json(
-        { ok: false, message: "Email is required." },
-        { status: 400 }
-      );
-    }
+    const supabaseAdmin = getSupabaseAdmin();
 
     const { data, error } = await supabaseAdmin
       .from("leads")
@@ -45,17 +27,11 @@ export async function POST(request: Request) {
       .single();
 
     if (error) {
-      return NextResponse.json(
-        { ok: false, message: error.message },
-        { status: 500 }
-      );
+      return NextResponse.json({ ok: false, message: error.message }, { status: 500 });
     }
 
     return NextResponse.json({ ok: true, lead: data });
   } catch {
-    return NextResponse.json(
-      { ok: false, message: "Something went wrong." },
-      { status: 500 }
-    );
+    return NextResponse.json({ ok: false, message: "Something went wrong." }, { status: 500 });
   }
 }
